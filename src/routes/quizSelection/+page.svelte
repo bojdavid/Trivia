@@ -14,7 +14,7 @@
   }
 
   let subjects: Subject[] = $state([]);
-  //just to puah
+  //just to puah -
   onMount(async () => {
     const response = await fetch("https://opentdb.com/api_category.php");
 
