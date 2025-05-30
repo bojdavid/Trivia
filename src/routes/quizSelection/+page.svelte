@@ -21,7 +21,7 @@
   let questionsData = $state();
   let fetchQuestionsData = $state();
   onMount(async () => {
-    fetchQuestionsData = changingVariables.subjectData;
+    fetchQuestionsData = await changingVariables.subjectData;
     questionsData = await fetchQuestionsData;
   });
 
@@ -103,7 +103,7 @@
               {selectRange}
               {startQuiz}
               {questions_limit}
-              questionsData={changingVariables.subjectData}
+              {questionsData}
             />
           {/await}
         {/if}
