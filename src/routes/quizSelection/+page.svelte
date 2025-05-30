@@ -5,6 +5,7 @@
   import SelectQuestionRange from "$lib/components/quizSelection/SelectQuestionRange.svelte";
   //import { setQuizMeta } from "$lib/components/globalState.svelte";
   import { onMount } from "svelte";
+
   import {
     startQuiz,
     selectSubject,
@@ -16,6 +17,13 @@
     name: string;
     id?: number;
   }
+
+  let questionsData = $state();
+  let fetchQuestionsData = $state();
+  onMount(async () => {
+    fetchQuestionsData = changingVariables.subjectData;
+    questionsData = await fetchQuestionsData;
+  });
 
   changingVariables.selectQuestionRange = false;
 
@@ -29,10 +37,10 @@
     no_of_questions: number;
   }
 
-  let selectedSubject: Subject | any = $state();
+  let selectedSubject: any = $state();
 
   let questions_limit: number = $state(0);
-  let selectedQuestionRange: number | any = $state();
+  //let selectedQuestionRange: number | any = $state();
 
   //Styles for the Buttons
   let submitButtonClass: string =
@@ -44,7 +52,7 @@
   };
 
   const selectRange = (range: number): void => {
-    selectedQuestionRange = range;
+    changingVariables.selectedQuestionRange = range;
   };
 </script>
 
@@ -86,15 +94,18 @@
             {selectedSubject}
           />
         {:else}
-          <SelectQuestionRange
-            {submitButtonClass}
-            {selectedQuestionRange}
-            {selectRange}
-            {startQuiz}
-            {questions_limit}
-            questionsData={changingVariables.subjectData
-              .category_question_count}
-          />
+          {#await fetchQuestionsData}
+            getting questions
+          {:then questionsData}
+            <SelectQuestionRange
+              {submitButtonClass}
+              selectedQuestionRange={changingVariables.selectedQuestionRange}
+              {selectRange}
+              {startQuiz}
+              {questions_limit}
+              questionsData={changingVariables.subjectData}
+            />
+          {/await}
         {/if}
       {:catch error}
         <p>

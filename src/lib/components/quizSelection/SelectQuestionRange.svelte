@@ -11,23 +11,30 @@
   console.log(questionsData);
   // questions_range will keep incrementing by 10 as long as it is less than questionslimit
   //let questions_range : number[] = Array.from({ length: Math.floor(questions_limit / 10) }, (_, i) => (i + 1) * 10);
+
   let questions_range: number[] = Array.from({ length: 10 }, (_, i) =>
-    Math.round((i + 1) * (questionsData.total_question_count / 10))
+    Math.round(
+      (i + 1) *
+        (questionsData.category_question_count.total_question_count / 10)
+    )
   );
 </script>
 
 <div class="grid grid-cols-2 text-center">
   <div>
-    Total Questions:{questionsData.total_question_count}
+    Total Questions:{questionsData.category_question_count.total_question_count}
   </div>
   <div>
-    Total Easy Questions: {questionsData.total_easy_question_count}
+    Total Easy Questions: {questionsData.category_question_count
+      .total_easy_question_count}
   </div>
   <div>
-    Total Medium Questions: {questionsData.total_medium_question_count}
+    Total Medium Questions: {questionsData.category_question_count
+      .total_medium_question_count}
   </div>
   <div>
-    Total Hard Questions: {questionsData.total_hard_question_count}
+    Total Hard Questions: {questionsData.category_question_count
+      .total_hard_question_count}
   </div>
 </div>
 
@@ -35,6 +42,7 @@
   type="text"
   placeholder="Enter the number of questions you want."
   class="text-lg mx-auto flex justify-center w-lg my-7 border p-3 rounded-xl"
+  bind:value={selectedQuestionRange}
 />
 
 <div class="grid grid-cols-2 gap-5 text-md my-5">

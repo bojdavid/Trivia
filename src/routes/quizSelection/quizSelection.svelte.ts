@@ -1,34 +1,40 @@
 
   export interface Subject {
     name: string;
-    id?: number;
+    id?: number; 
   }
+
+  interface QuestionsData {total_question_count: number, total_easy_question_count: number, total_medium_question_count: number, total_hard_question_count: number}
 
 //let selectCategory: boolean = $state(false);
 
 export const changingVariables = $state({
 	selectQuestionRange: false,
-  subjectData: null
-
+  subjectData: Promise<any>,
+  selectedQuestionRange : 0,
+  selectedSubject: {name:"", id:0}
 });
 
-export const startQuiz = (subject : string, category: string[], questionsRange : number) =>{
+export const startQuiz = () =>{
         let quizMeta = {
-      subject: subject,
-      category: category,
-      noOfQuestions: questionsRange,
+      subject: changingVariables.selectedSubject.name,
+      id: changingVariables.selectedSubject.id,
+      noOfQuestions: changingVariables.selectedQuestionRange,
     };
     //setQuizMeta(quizMeta);
+    console.log(quizMeta)
     }
 
-export const selectSubject = async (selectedSubject : Subject) => {
+export const selectSubject = async (selectedSubject :any) => {
     // Check if selectedSubject is empty
     if (selectedSubject == undefined) {
       console.log("Please select a subject");
     } else {
       changingVariables.selectQuestionRange = true;
-      //console.log("Question range in seslectsubj func --- ", changingVariables.selectQuestionRange)
+      console.log(" From here----")
+      changingVariables.selectedSubject = selectedSubject
       changingVariables.subjectData = await getQuestionCount(selectedSubject);
+      console.log($state.snapshot(changingVariables.subjectData))
     
     }
   };
