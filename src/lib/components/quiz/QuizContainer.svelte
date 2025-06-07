@@ -37,7 +37,7 @@
     option.active = true;
     active = option.option;
     question.answered = true;
-    question.choice = option.option;
+    question.choice = option.text;
   };
 </script>
 
@@ -60,7 +60,7 @@
           {#each options as option}
             {#if !(viewCorrect || question.view_correct_ans)}
               <button
-                class="min-w-9/10 mt-3 text-left
+                class="min-w-9/10 mt-3 text-left flex
                                                 dark:hover:bg-primary-800
                                                 transition ease-in-out duration-300
                                                 rounded-lg
@@ -70,19 +70,21 @@
                   option.option == question.choice}
                 onclick={() => setActiveOption(option)}
               >
-                <span
-                  class="mr-3 dark:bg-primary-700 w-15 inline-block py-3 text-center font-bold"
+                <div
+                  class="mr-3 dark:bg-primary-700 w-15 inline-block py-3 px-7 text-center font-bold"
                 >
                   {option.option}
-                </span>
-                {option.text}
+                </div>
+                <div class="my-auto">
+                  {option.text}
+                </div>
               </button>
             {:else}
               <!-- Added this extra if so when the option changes the transition will take effect-->
               {#if option}
                 <button
-                  class="min-w-9/10 mt-3 text-left
-                                                        {option.option ==
+                  class="min-w-9/10 mt-3 text-left flex
+                                                        {option.text ==
                   question.CorrectOption
                     ? 'bg-success-400 dark:bg-success-700'
                     : 'bg-error-400 dark:bg-error-700'}
@@ -93,11 +95,13 @@
                   transition:fade
                 >
                   <span
-                    class="mr-3 dark:bg-primary-500 w-15 inline-block py-3 text-center font-bold"
+                    class="mr-3 dark:bg-primary-500 w-15 h-full inline-block py-3 text-center font-bold"
                   >
                     {option.option}
                   </span>
-                  {option.text}
+                  <div class="my-auto">
+                    {option.text}
+                  </div>
                 </button>
               {/if}
             {/if}
