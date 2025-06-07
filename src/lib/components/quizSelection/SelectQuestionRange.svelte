@@ -8,7 +8,6 @@
     questionsData,
   } = $props();
 
-  console.log(questionsData);
   // questions_range will keep incrementing by 10 as long as it is less than questionslimit
   //let questions_range : number[] = Array.from({ length: Math.floor(questions_limit / 10) }, (_, i) => (i + 1) * 10);
 

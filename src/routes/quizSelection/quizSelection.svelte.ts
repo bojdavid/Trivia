@@ -1,3 +1,6 @@
+  import { goto } from "$app/navigation";
+  import { writable, get } from 'svelte/store';
+
 
   export interface Subject {
     name: string;
@@ -8,33 +11,40 @@
 
 //let selectCategory: boolean = $state(false);
 
-export const changingVariables = $state({
+export const changingVariables = writable({
 	selectQuestionRange: false,
-  subjectData: Promise<any>,
+  subjectData: new Promise(() => {}),
   selectedQuestionRange : 0,
   selectedSubject: {name:"", id:0}
 });
 
+
 export const startQuiz = () =>{
-        let quizMeta = {
-      subject: changingVariables.selectedSubject.name,
-      id: changingVariables.selectedSubject.id,
-      noOfQuestions: changingVariables.selectedQuestionRange,
-    };
+  /*      
+  let quizMeta = {
+                subject: changingVariables.selectedSubject.name,
+                id: changingVariables.selectedSubject.id,
+                noOfQuestions: changingVariables.selectedQuestionRange,
+        };
     //setQuizMeta(quizMeta);
     console.log(quizMeta)
+    */
+    goto('./quiz');
     }
 
 export const selectSubject = async (selectedSubject :any) => {
     // Check if selectedSubject is empty
     if (selectedSubject == undefined) {
-      console.log("Please select a subject");
+      alert("Please select a subject");
     } else {
-      changingVariables.selectQuestionRange = true;
-      console.log(" From here----")
-      changingVariables.selectedSubject = selectedSubject
-      changingVariables.subjectData = await getQuestionCount(selectedSubject);
-      console.log($state.snapshot(changingVariables.subjectData))
+      const current = get(changingVariables);
+
+      changingVariables.set({
+        ...current,
+        selectQuestionRange: true,
+        selectedSubject,
+        subjectData: getQuestionCount(selectedSubject)
+      });
     
     }
   };

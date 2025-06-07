@@ -3,6 +3,7 @@
   import QuizContainer from "$lib/components/quiz/QuizContainer.svelte";
   import QuestionsNavigation from "$lib/components/quiz/QuestionsNavigation.svelte";
   import { Progress } from "@skeletonlabs/skeleton-svelte";
+  import { changingVariables } from "../quizSelection/quizSelection.svelte";
 
   //import functions from the quiz.svelte files
   //import { questionsData } from "./+page";
@@ -98,13 +99,14 @@
   };
 </script>
 
+{@debug changingVariables}
 <main
   class="mt-10 mx-auto min-h-screen flex flex-col items-center justify-center"
 >
   <div class="min-w-xs w-full max-w-2xl mx-2 px-2">
     <div class="text-3xl font-bold mb-5">00:1:37</div>
 
-    <a href="/home" class="text-green-500">Home</a>
+    <a href="/" class="text-green-500">Home</a>
 
     <div class="flex justify-end mb-5">
       <button

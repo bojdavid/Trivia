@@ -18,14 +18,15 @@
     id?: number;
   }
 
+  let fetchQuestionsData = $changingVariables.subjectData; //$state();
   let questionsData = $state();
-  let fetchQuestionsData = $state();
+
   onMount(async () => {
-    fetchQuestionsData = await changingVariables.subjectData;
+    //fetchQuestionsData = changingVariables.subjectData;
     questionsData = await fetchQuestionsData;
   });
 
-  changingVariables.selectQuestionRange = false;
+  $changingVariables.selectQuestionRange = false;
 
   let subjects: Subject[] = $state([]);
 
@@ -48,12 +49,13 @@
 
   const pickSubject = (subj: Subject): void => {
     selectedSubject = subj;
-    console.log(changingVariables.selectQuestionRange);
   };
 
   const selectRange = (range: number): void => {
-    changingVariables.selectedQuestionRange = range;
+    $changingVariables.selectedQuestionRange = range;
   };
+
+  //setContext("changingVariables", changingVariables);
 </script>
 
 <main class="min-h-screen">
@@ -66,12 +68,12 @@
     <a href="./" class="btn preset-filled-primary-500 w-[150px]"> Home</a>
     <div class="mx-auto">
       <h2 class="text-4xl">
-        Select {changingVariables.selectQuestionRange
+        Select {$changingVariables.selectQuestionRange
           ? "No of Questions"
           : "Subject"}
       </h2>
       <p class="text-xs">
-        {changingVariables.selectQuestionRange
+        {$changingVariables.selectQuestionRange
           ? "Select the number of questions you want to answer"
           : "You can only select one subject"}
       </p>
@@ -85,7 +87,7 @@
       {#await fetchSubjects}
         <p class="text-lg text-center">Fetching subjects .....</p>
       {:then subjects}
-        {#if !changingVariables.selectQuestionRange}
+        {#if !$changingVariables.selectQuestionRange}
           <SelectSubject
             {subjects}
             {pickSubject}
@@ -97,9 +99,10 @@
           {#await fetchQuestionsData}
             getting questions
           {:then questionsData}
+            {@debug changingVariables, questionsData, fetchQuestionsData}
             <SelectQuestionRange
               {submitButtonClass}
-              selectedQuestionRange={changingVariables.selectedQuestionRange}
+              selectedQuestionRange={$changingVariables.selectedQuestionRange}
               {selectRange}
               {startQuiz}
               {questions_limit}
