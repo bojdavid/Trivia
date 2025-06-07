@@ -50,7 +50,9 @@
         out:fly={{ x: -500, duration: 500 }}
       >
         <!-- Question Container-->
-        <section class="text-xl md:text-2xl bg-surface-800 py-7 px-2">
+        <section
+          class="text-xl md:text-2xl dark:bg-surface-800 bg-surface-50 py-7 px-2"
+        >
           {question.Question}
         </section>
         <!-- OPTIONS CONTAINER  -->

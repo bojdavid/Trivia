@@ -68,14 +68,13 @@ export const load: PageLoad = async ({ fetch, params })  => {
 	let data : any= [];
 	let ques
 
-	/*
+	
 	const quizMeta = get(changingVariables)
 
 	if(!quizMeta.selectQuestionRange){
 		return goto("/quizSelection")
 	}
 		const response = await fetch(`https://opentdb.com/api.php?category=${quizMeta.selectedSubject.id}&amount=20&type=multiple`)
-		//const response = await fetch(`https://opentdb.com/api.php?amount=10&category=9&type=multiple`)
 		if(response.ok){
 
 			 ques = await response.json()
@@ -87,8 +86,8 @@ export const load: PageLoad = async ({ fetch, params })  => {
 			 }
 		}
 
-	*/
-	data = transformToQuizQuestions(apiData)
+	
+	//data = transformToQuizQuestions(apiData)
 		
 		return {
 			questions: data,
