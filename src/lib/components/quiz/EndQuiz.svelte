@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { scoreCount, noOfQuestion } = $props();
+  let { scoreCount, noOfQuestion, questions } = $props();
 
   function giveFeedback(score: number, total: number) {
     const percentage = (score / total) * 100;
@@ -18,6 +18,17 @@
   }
   let feedBack: string = giveFeedback(scoreCount, noOfQuestion);
 </script>
+
+{#snippet question(prompt: string, ans: string)}
+  <div class="mb-2 lg:text-lg">
+    <span class="font-bold">Question: </span>
+    {prompt}
+    <p>
+      <span class="font-bold text-green-500">Answer: </span>
+      <span> {ans} </span>
+    </p>
+  </div>
+{/snippet}
 
 <div class="text-5xl text-center">
   You got
@@ -39,4 +50,8 @@
     class="text-tertiary-500 underline hover:text-tertiary-800 transition duration-300 ease-in-out"
     >Go back home</a
   >
+
+  {#each questions as quest}
+    {@render question(quest.Question, quest[`Option${quest.CorrectOption}`])}
+  {/each}
 </div>

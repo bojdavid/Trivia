@@ -12,15 +12,15 @@
   {#each subjects as subject}
     <button
       type="button"
-      class="btn preset-outlined-primary-500 rounded-lg text-xl p-4 {selectedSubject ==
-      undefined
-        ? ''
-        : selectedSubject.id == subject.id
-          ? 'bg-secondary-500'
-          : ''}"
+      class="btn preset-outlined-primary-500 rounded-lg md:text-xl text-sm p-4 whitespace-normal {selectedSubject?.id ==
+      subject.id
+        ? 'bg-secondary-500'
+        : ''}"
       onclick={() => pickSubject(subject)}
     >
-      {subject.name}
+      <p class="w-full break-words">
+        {subject.name}
+      </p>
     </button>
   {/each}
 </div>

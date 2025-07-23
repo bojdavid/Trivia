@@ -75,7 +75,7 @@
                 >
                   {option.option}
                 </div>
-                <div class="my-auto">
+                <div class="my-auto pr-3">
                   {option.text}
                 </div>
               </button>
@@ -84,7 +84,7 @@
               {#if option}
                 <button
                   class="min-w-9/10 mt-3 text-left flex
-                                                        {option.text ==
+                                                        {option.option ==
                   question.CorrectOption
                     ? 'bg-success-400 dark:bg-success-700'
                     : 'bg-error-400 dark:bg-error-700'}

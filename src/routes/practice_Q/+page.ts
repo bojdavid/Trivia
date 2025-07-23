@@ -1,5 +1,5 @@
 import type { PageLoad } from './$types';
-import { questions } from './data.js';
+import { csc413 } from './data.js';
 
 
 // -------------------------------------------------------
@@ -37,7 +37,6 @@ function randomiseOptions(questions: QuizQuestion[]): QuizQuestion[] {
   return questions.map(q => {
     // Put correct + incorrect answers in one list
     const opts = shuffle([
-      q.CorrectOption,
       q.OptionA,
       q.OptionB,
       q.OptionC,
@@ -69,7 +68,7 @@ function randomiseOptions(questions: QuizQuestion[]): QuizQuestion[] {
 
 
 export const load: PageLoad = async ({ fetch, params })  => {
-	const shuffledQuestions = randomiseOptions(questions);
+	const shuffledQuestions = randomiseOptions(csc413);
     
     return {
 			questions: shuffledQuestions,

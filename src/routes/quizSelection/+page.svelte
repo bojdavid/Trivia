@@ -1,7 +1,6 @@
 <script lang="ts">
   import "../../lib/styles/app.css";
   import SelectSubject from "$lib/components/quizSelection/SelectSubject.svelte";
-  import SelectCategory from "$lib/components/quizSelection/SelectCategory.svelte";
   import SelectQuestionRange from "$lib/components/quizSelection/SelectQuestionRange.svelte";
   //import { setQuizMeta } from "$lib/components/globalState.svelte";
   import { onMount } from "svelte";

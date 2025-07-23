@@ -116,9 +116,11 @@
   startTimer();
 </script>
 
-<main class="mx-auto min-h-screen flex flex-col items-center justify-center">
+<main
+  class="mx-auto px-3 min-h-screen flex flex-col items-center justify-center"
+>
   {#if stopQuiz}
-    <EndQuiz {scoreCount} {noOfQuestion} />
+    <EndQuiz {scoreCount} {noOfQuestion} {questions} />
   {:else}
     <div class="min-w-xs w-full max-w-2xl mx-2 px-2 mt-10">
       <div class="text-3xl font-bold mb-5">{timeLeft}</div>
