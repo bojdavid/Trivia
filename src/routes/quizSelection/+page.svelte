@@ -8,21 +8,24 @@
   import {
     startQuiz,
     selectSubject,
-    getSubjects,
     changingVariables,
   } from "./quizSelection.svelte";
 
+  import { getSubjects, getQuestionCount } from "$lib/api/question";
+  import { writable, get } from "svelte/store";
+
   interface Subject {
     name: string;
-    id?: number;
+    id: number;
   }
 
-  let fetchQuestionsData = $changingVariables.subjectData; //$state();
+  let fetchQuestionsData = $state();
+
   let questionsData = $state();
 
   onMount(async () => {
     //fetchQuestionsData = changingVariables.subjectData;
-    questionsData = await fetchQuestionsData;
+    //questionsData = await fetchQuestionsData;
   });
 
   $changingVariables.selectQuestionRange = false;
@@ -48,6 +51,14 @@
 
   const pickSubject = (subj: Subject): void => {
     selectedSubject = subj;
+    const current = get(changingVariables);
+
+    changingVariables.set({
+      ...current,
+      selectedSubject: subj,
+    });
+
+    console.log(changingVariables);
   };
 
   const selectRange = (range: number): void => {
@@ -55,6 +66,9 @@
   };
 
   //setContext("changingVariables", changingVariables);
+  $effect(() => {
+    if (selectedSubject) fetchQuestionsData = getQuestionCount(selectedSubject);
+  });
 </script>
 
 <main class="min-h-screen">
@@ -96,9 +110,12 @@
           />
         {:else}
           {#await fetchQuestionsData}
-            getting questions
+            <div class="text-xl text-surface-800 dark:text-surface-200">
+              getting questions ......
+            </div>
+            {console.log(fetchQuestionsData)}
           {:then questionsData}
-            {@debug changingVariables, questionsData, fetchQuestionsData}
+            <!--{@debug changingVariables, questionsData, fetchQuestionsData} -->
             <SelectQuestionRange
               {submitButtonClass}
               selectedQuestionRange={$changingVariables.selectedQuestionRange}

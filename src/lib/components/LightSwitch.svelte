@@ -38,7 +38,7 @@
   </script>
 </svelte:head>
 
-<Switch name="mode" controlActive="bg-surface-200" {checked} {onCheckedChange}>
+<Switch name="mode" controlActive="" {checked} {onCheckedChange}>
   {#snippet inactiveChild()}<IconMoon size="30" />{/snippet}
   {#snippet activeChild()}<IconSun size="30" />{/snippet}
 </Switch>

@@ -37,7 +37,7 @@
     option.active = true;
     active = option.option;
     question.answered = true;
-    question.choice = option.text;
+    question.choice = option.option;
   };
 </script>
 

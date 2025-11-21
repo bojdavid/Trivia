@@ -1,5 +1,6 @@
   import { goto } from "$app/navigation";
   import { writable, get } from 'svelte/store';
+  import { getQuestionCount } from "$lib/api/question";
 
 
   export interface Subject {
@@ -7,28 +8,39 @@
     id?: number; 
   }
 
-  interface QuestionsData {total_question_count: number, total_easy_question_count: number, total_medium_question_count: number, total_hard_question_count: number}
 
 //let selectCategory: boolean = $state(false);
 
-export const changingVariables = writable({
-	selectQuestionRange: false,
-  subjectData: new Promise(() => {}),
-  selectedQuestionRange : 0,
-  selectedSubject: {name:"", id:0}
+interface ChangingVariable {
+  selectQuestionRange: boolean;
+  subjectData: Promise<any>;
+  selectedQuestionRange: number;
+  selectedSubject: { name: string; id: number };
+}
+
+// Function to create a new Promise
+const newPromise = new Promise((resolve) => {
+  //getQuestionCount(selectedSubject)
+  // Simulate asynchronous data fetching
+  console.log("the changing variables data is ")
+  setTimeout(() => {
+    resolve({ data: 'Some data' });
+  }, 1000);
 });
 
+// Initial value for the store
+const initialValue: ChangingVariable = {
+  selectQuestionRange: false,
+  subjectData: newPromise,
+  selectedQuestionRange: 10,
+  selectedSubject: { name: "", id: 0 }
+};
+
+
+// Create the writable store
+export const changingVariables = writable<ChangingVariable>(initialValue);
 
 export const startQuiz = () =>{
-  /*      
-  let quizMeta = {
-                subject: changingVariables.selectedSubject.name,
-                id: changingVariables.selectedSubject.id,
-                noOfQuestions: changingVariables.selectedQuestionRange,
-        };
-    //setQuizMeta(quizMeta);
-    console.log(quizMeta)
-    */
     goto('./quiz');
     }
 
@@ -45,21 +57,7 @@ export const selectSubject = async (selectedSubject :any) => {
         selectedSubject,
         subjectData: getQuestionCount(selectedSubject)
       });
-    
     }
+    
   };
 
-export const getSubjects = (subjects: any)=>{
-  return fetch("https://opentdb.com/api_category.php")
-    .then((res) => res.json())
-    .then((data) => (subjects = data.trivia_categories)); 
-  }
-
-const getQuestionCount = (selectedSubject: any) =>{
- return fetch(`https://opentdb.com/api_count.php?category=${selectedSubject.id}`)
-        .then((res) => res.json())
-}
-
-export const getQuestions = () => {
-
-}

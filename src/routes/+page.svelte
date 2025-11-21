@@ -4,7 +4,7 @@
 </script>
 
 <div class=" w-full h-40 mx-auto">
-  <div>
+  <div class="w-20 mx-auto dark:bg-surface-700 dark:text-surface-500">
     <LightSwitch />
   </div>
 
