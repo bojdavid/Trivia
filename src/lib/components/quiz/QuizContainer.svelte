@@ -77,20 +77,20 @@
             {@const isCorrect = opt.option === question.CorrectOption}
             {@const showFeedback = viewCorrect || question.view_correct_ans}
 
-            {#if !showFeedback}
+             {#if !showFeedback}
               <!-- Normal Play State -->
               <button
                 type="button"
                 class="w-full p-4 rounded-xl border text-left flex items-center transition-all duration-200 group
                        {isSelected 
                          ? 'bg-primary-500/10 border-primary-500 text-primary-700 dark:text-primary-300 font-medium' 
-                         : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'}"
+                         : 'bg-slate-100 border-slate-200 hover:bg-slate-200 hover:border-slate-300 dark:bg-white/5 dark:border-white/10 dark:hover:bg-white/10 dark:hover:border-white/20'}"
                 onclick={() => selectOption(opt.option)}
               >
                 <span class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm mr-4 transition-colors
                              {isSelected 
                                ? 'bg-primary-500 text-white' 
-                               : 'bg-white/10 text-surface-700 dark:text-surface-300 group-hover:bg-white/20'}"
+                               : 'bg-slate-200 text-surface-700 group-hover:bg-slate-300 dark:bg-white/10 dark:text-surface-300 dark:group-hover:bg-white/20'}"
                 >
                   {opt.option}
                 </span>
