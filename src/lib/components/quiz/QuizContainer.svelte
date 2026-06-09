@@ -27,6 +27,7 @@
     goToPrevQuestion,
     questionNum,
     viewCorrectAns,
+    onSelectOption,
   } = $props<{
     question: QuizQuestion;
     viewCorrect: boolean;
@@ -34,6 +35,7 @@
     goToPrevQuestion: () => void;
     questionNum: number;
     viewCorrectAns: (question: QuizQuestion) => void;
+    onSelectOption: (opt: string) => void;
   }>();
 
   interface QuizOption {
@@ -50,8 +52,7 @@
   ]);
 
   const selectOption = (opt: string) => {
-    question.answered = true;
-    question.choice = opt;
+    onSelectOption(opt);
   };
 </script>
 

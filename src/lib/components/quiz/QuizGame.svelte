@@ -27,7 +27,7 @@
   }
 
   let {
-    questions = [],
+    questions: questionsRaw = [],
     timerType = 'countdown',
     initialTime = 60,
     quizTitle = "Trivia Quiz"
@@ -37,6 +37,9 @@
     initialTime: number;
     quizTitle?: string;
   }>();
+
+  // Wrap in $state so property mutations trigger reactivity
+  let questions = $state<QuizQuestion[]>(questionsRaw);
 
   // Core gameplay reactive state
   let questionNum = $state(0);
@@ -99,6 +102,11 @@
   const goToQuestion = (id: number): void => {
     questionNum = id;
     viewCorrect = false;
+  };
+
+  const selectOption = (question: QuizQuestion, opt: string): void => {
+    question.answered = true;
+    question.choice = opt;
   };
 
   const viewCorrectAns = (question: QuizQuestion): void => {
@@ -201,6 +209,7 @@
               {goToPrevQuestion}
               {questionNum}
               {viewCorrectAns}
+              onSelectOption={(opt) => selectOption(questions[questionNum], opt)}
             />
           {/if}
         </div>
