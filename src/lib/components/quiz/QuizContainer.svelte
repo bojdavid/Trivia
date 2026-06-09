@@ -1,166 +1,199 @@
 <script lang="ts">
   import { fly, fade } from "svelte/transition";
+  import IconCheck from "@lucide/svelte/icons/check";
+  import IconX from "@lucide/svelte/icons/x";
+  import IconHelpCircle from "@lucide/svelte/icons/help-circle";
+
+  interface QuizQuestion {
+    ID: number;
+    Question: string;
+    CorrectOption: string;
+    OptionA: string;
+    OptionB: string;
+    OptionC: string;
+    OptionD: string;
+    AnswerExplanation?: string;
+    Category: string;
+    answered?: boolean;
+    view_correct_ans?: boolean;
+    choice?: string;
+    id?: number;
+  }
 
   let {
     question,
     viewCorrect,
     goToNextQuestion,
-    selectedAns,
     goToPrevQuestion,
     questionNum,
     viewCorrectAns,
-  } = $props();
+  } = $props<{
+    question: QuizQuestion;
+    viewCorrect: boolean;
+    goToNextQuestion: () => void;
+    goToPrevQuestion: () => void;
+    questionNum: number;
+    viewCorrectAns: (question: QuizQuestion) => void;
+  }>();
 
   interface QuizOption {
     option: string;
     text: string;
-    active: boolean;
   }
 
-  let active: string = $state("");
-  let options: QuizOption[] = $state([]);
+  // Derive options directly from the reactive question prop
+  let options: QuizOption[] = $derived([
+    { option: "A", text: question.OptionA },
+    { option: "B", text: question.OptionB },
+    { option: "C", text: question.OptionC },
+    { option: "D", text: question.OptionD },
+  ]);
 
-  // Update options when question or active changes
-  $effect(() => {
-    options = [
-      { option: "A", text: question.OptionA, active: false },
-      { option: "B", text: question.OptionB, active: false },
-      { option: "C", text: question.OptionC, active: false },
-      { option: "D", text: question.OptionD, active: false },
-    ];
-
-    active = "";
-  });
-
-  const setActiveOption = (option: any) => {
-    selectedAns = false;
-    option.active = true;
-    active = option.option;
+  const selectOption = (opt: string) => {
     question.answered = true;
-    question.choice = option.option;
+    question.choice = opt;
   };
 </script>
 
-<div class="dark:bg-surface-900 p-5 w-full">
-  <div class="flex w-full relative h-[450px] overflow-hidden">
+<div class="w-full flex flex-col justify-between min-h-[480px]">
+  <!-- Question Content Card with slide animation -->
+  <div class="relative flex-1 overflow-hidden">
     {#key questionNum}
       <div
-        class="absolute w-full z-10"
-        in:fly={{ x: 500, duration: 500 }}
-        out:fly={{ x: -500, duration: 500 }}
+        class="w-full py-4"
+        in:fly={{ x: 300, duration: 400 }}
+        out:fly={{ x: -300, duration: 400 }}
       >
-        <!-- Question Container-->
-        <section
-          class="text-xl md:text-2xl dark:bg-surface-800 bg-surface-50 py-7 px-2"
-        >
+        <!-- Question Title -->
+        <h3 class="text-xl md:text-2xl font-bold text-surface-900 dark:text-white leading-relaxed mb-6">
           {question.Question}
-        </section>
-        <!-- OPTIONS CONTAINER  -->
-        <section class="text-md md:text-lg px-2 flex flex-col items-start">
-          {#each options as option}
-            {#if !(viewCorrect || question.view_correct_ans)}
+        </h3>
+
+        <!-- Options List -->
+        <div class="space-y-3.5">
+          {#each options as opt}
+            {@const isSelected = question.choice === opt.option}
+            {@const isCorrect = opt.option === question.CorrectOption}
+            {@const showFeedback = viewCorrect || question.view_correct_ans}
+
+            {#if !showFeedback}
+              <!-- Normal Play State -->
               <button
-                class="min-w-9/10 mt-3 text-left flex
-                                                dark:hover:bg-primary-800
-                                                transition ease-in-out duration-300
-                                                rounded-lg
-                                                border-2 border-surface-500
-                                                "
-                class:active={option.option === active ||
-                  option.option == question.choice}
-                onclick={() => setActiveOption(option)}
+                type="button"
+                class="w-full p-4 rounded-xl border text-left flex items-center transition-all duration-200 group
+                       {isSelected 
+                         ? 'bg-primary-500/10 border-primary-500 text-primary-700 dark:text-primary-300 font-medium' 
+                         : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'}"
+                onclick={() => selectOption(opt.option)}
               >
-                <div
-                  class="mr-3 dark:bg-primary-700 w-15 inline-block py-3 px-7 text-center font-bold"
+                <span class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm mr-4 transition-colors
+                             {isSelected 
+                               ? 'bg-primary-500 text-white' 
+                               : 'bg-white/10 text-surface-700 dark:text-surface-300 group-hover:bg-white/20'}"
                 >
-                  {option.option}
-                </div>
-                <div class="my-auto pr-3">
-                  {option.text}
-                </div>
+                  {opt.option}
+                </span>
+                <span class="flex-1 text-sm md:text-base leading-snug">{opt.text}</span>
               </button>
             {:else}
-              <!-- Added this extra if so when the option changes the transition will take effect-->
-              {#if option}
-                <button
-                  class="min-w-9/10 mt-3 text-left flex
-                                                        {option.option ==
-                  question.CorrectOption
-                    ? 'bg-success-400 dark:bg-success-700'
-                    : 'bg-error-400 dark:bg-error-700'}
-                                                        transition ease-in-out duration-300
-                                                        rounded-lg
-                                                        border-2 border-surface-500
-                                                        "
-                  transition:fade
+              <!-- Reveal Answers State -->
+              <div
+                class="w-full p-4 rounded-xl border text-left flex items-center transition-all duration-300
+                       {isCorrect
+                         ? 'bg-success-500/10 border-success-500 text-success-700 dark:text-success-400 font-medium shadow-md shadow-success-500/5'
+                         : isSelected
+                           ? 'bg-error-500/10 border-error-500/80 text-error-700 dark:text-error-400'
+                           : 'bg-white/5 border-white/10 opacity-60'}"
+                transition:fade={{ duration: 200 }}
+              >
+                <!-- Badge symbol / icon -->
+                <span class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm mr-4 text-white
+                             {isCorrect 
+                               ? 'bg-success-500' 
+                               : isSelected 
+                                 ? 'bg-error-500' 
+                                 : 'bg-white/10 text-surface-400'}"
                 >
-                  <span
-                    class="mr-3 dark:bg-primary-500 w-15 h-full inline-block py-3 text-center font-bold"
-                  >
-                    {option.option}
-                  </span>
-                  <div class="my-auto">
-                    {option.text}
-                  </div>
-                </button>
-              {/if}
+                  {#if isCorrect}
+                    <IconCheck size="16" />
+                  {:else if isSelected}
+                    <IconX size="16" />
+                  {:else}
+                    {opt.option}
+                  {/if}
+                </span>
+                
+                <span class="flex-1 text-sm md:text-base leading-snug">{opt.text}</span>
+                
+                <!-- Feedback message text -->
+                {#if isCorrect}
+                  <span class="text-xs font-bold text-success-500 uppercase tracking-wider ml-2">Correct</span>
+                {:else if isSelected}
+                  <span class="text-xs font-bold text-error-500 uppercase tracking-wider ml-2">Your Choice</span>
+                {/if}
+              </div>
             {/if}
           {/each}
-        </section>
+        </div>
       </div>
     {/key}
   </div>
-  <div class="w-full flex justify-between mt-10">
-    {#if questionNum > 0}
-      <button
-        type="button"
-        class="btn preset-filled-secondary-500"
-        onclick={goToPrevQuestion}
-        transition:fade
-      >
-        Prev
-      </button>
-    {:else}
-      <div></div>
-    {/if}
-    <button
-      type="button"
-      class="btn preset-filled-secondary-500"
-      onclick={goToNextQuestion}
-    >
-      {#if active == ""}
-        Skip
-      {:else}
-        Next
-      {/if}
-    </button>
-  </div>
 
-  <section class="mb-10">
-    <div class="w-full flex justify-start mt-10">
+  <!-- Explanations Box (If visible) -->
+  {#if (viewCorrect || question.view_correct_ans) && question.AnswerExplanation}
+    <div class="mt-4 p-4 rounded-2xl bg-primary-500/5 border border-primary-500/10 text-sm" transition:fade>
+      <div class="flex items-start gap-2.5">
+        <IconHelpCircle size="18" class="text-primary-500 mt-0.5 flex-shrink-0" />
+        <div>
+          <span class="font-bold text-primary-500 block mb-1">Explanation</span>
+          <p class="text-surface-600 dark:text-surface-300 leading-relaxed">{question.AnswerExplanation}</p>
+        </div>
+      </div>
+    </div>
+  {/if}
+
+  <!-- Action buttons navigation (Prev / Skip / View Correct Answer / Next) -->
+  <div class="w-full pt-8 mt-6 border-t border-white/10 flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between">
+    <div class="flex gap-2">
+      <!-- Prev Button -->
+      {#if questionNum > 0}
+        <button
+          type="button"
+          class="px-5 py-3 rounded-xl border border-white/10 text-sm font-bold hover:bg-white/5 active:scale-95 transition-all text-center"
+          onclick={goToPrevQuestion}
+        >
+          Previous
+        </button>
+      {/if}
+
+      <!-- View Correct Answer Button -->
       <button
         type="button"
-        class="btn preset-filled-secondary-500"
+        class="px-5 py-3 rounded-xl border border-primary-500/20 text-sm font-bold hover:bg-primary-500/5 text-primary-500 dark:text-primary-400 active:scale-95 transition-all text-center"
         onclick={() => viewCorrectAns(question)}
       >
         {#if !(viewCorrect || question.view_correct_ans)}
-          View Correct Answer
+          Reveal Answer
         {:else}
-          View Reason for Answer
+          View Explanation
         {/if}
       </button>
     </div>
 
-    <!--
-            <div class:hidden={!viewCorrect}>
-                {questions[questionNum].CorrectOption}
-            </div>
-            -->
-  </section>
+    <!-- Next / Skip Button -->
+    <button
+      type="button"
+      class="px-8 py-3 rounded-xl font-bold active:scale-95 transition-all text-center text-white
+             {question.choice 
+               ? 'bg-secondary-500 hover:bg-secondary-600 shadow-md shadow-secondary-500/20' 
+               : 'bg-white/10 hover:bg-white/15'}"
+      onclick={goToNextQuestion}
+    >
+      {#if question.choice}
+        Next Question &rarr;
+      {:else}
+        Skip Question
+      {/if}
+    </button>
+  </div>
 </div>
-
-<style>
-  .active {
-    background-color: red;
-  }
-</style>

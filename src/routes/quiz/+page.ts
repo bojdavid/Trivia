@@ -1,7 +1,6 @@
 import type { PageLoad } from './$types';
 import { questions, apiData } from './data.js';
-import { get } from "svelte/store";
-import { changingVariables } from '../quizSelection/quizSelection.svelte';
+import { quizSelectionState } from '../quizSelection/quizSelection.svelte';
 import { goto } from '$app/navigation';
 
 export const ssr = false;
@@ -68,23 +67,20 @@ export const load: PageLoad = async ({ fetch, params })  => {
 	let data : any= [];
 	let ques
 
-	
-	const quizMeta = get(changingVariables)
-
-	if(!quizMeta.selectQuestionRange){
+	if(!quizSelectionState.selectQuestionRange){
 		return goto("/quizSelection")
 	}
-		const response = await fetch(`https://opentdb.com/api.php?category=${quizMeta.selectedSubject.id}&amount=20&type=multiple`)
-		if(response.ok){
+	const response = await fetch(`https://opentdb.com/api.php?category=${quizSelectionState.selectedSubject.id}&amount=${quizSelectionState.selectedQuestionRange}&type=multiple`)
+	if(response.ok){
 
-			 ques = await response.json()
-			 if(ques.response_code != 0){
-				 alert("error in the response")
-			 }
-			 else{
-				 data = transformToQuizQuestions(ques)
-			 }
-		}
+		 ques = await response.json()
+		 if(ques.response_code != 0){
+			 alert("error in the response")
+		 }
+		 else{
+			 data = transformToQuizQuestions(ques)
+		 }
+	}
 
 	
 	//data = transformToQuizQuestions(apiData)

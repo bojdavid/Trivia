@@ -2,138 +2,109 @@
   import "../../lib/styles/app.css";
   import SelectSubject from "$lib/components/quizSelection/SelectSubject.svelte";
   import SelectQuestionRange from "$lib/components/quizSelection/SelectQuestionRange.svelte";
-  //import { setQuizMeta } from "$lib/components/globalState.svelte";
-  import { onMount } from "svelte";
-
-  import {
-    startQuiz,
-    selectSubject,
-    changingVariables,
-  } from "./quizSelection.svelte";
-
-  import { getSubjects, getQuestionCount } from "$lib/api/question";
-  import { writable, get } from "svelte/store";
+  import { quizSelectionState } from "./quizSelection.svelte";
+  import { getSubjects } from "$lib/api/question";
+  import IconChevronLeft from "@lucide/svelte/icons/chevron-left";
+  import LightSwitch from "$lib/components/LightSwitch.svelte";
 
   interface Subject {
     name: string;
     id: number;
   }
 
-  let fetchQuestionsData = $state();
-
-  let questionsData = $state();
-
-  onMount(async () => {
-    //fetchQuestionsData = changingVariables.subjectData;
-    //questionsData = await fetchQuestionsData;
-  });
-
-  $changingVariables.selectQuestionRange = false;
-
-  let subjects: Subject[] = $state([]);
-
-  const fetchSubjects = getSubjects(subjects);
-
-  //sample data
-  interface category {
-    topic: string;
-    no_of_questions: number;
-  }
-
-  let selectedSubject: any = $state();
-
-  let questions_limit: number = $state(0);
-  //let selectedQuestionRange: number | any = $state();
-
-  //Styles for the Buttons
-  let submitButtonClass: string =
-    "btn preset-outlined-secondary-500 rounded-lg text-md p-4";
+  // Load the subjects promise
+  const fetchSubjects = getSubjects([]);
 
   const pickSubject = (subj: Subject): void => {
-    selectedSubject = subj;
-    const current = get(changingVariables);
-
-    changingVariables.set({
-      ...current,
-      selectedSubject: subj,
-    });
-
-    console.log(changingVariables);
+    quizSelectionState.selectedSubject = subj;
   };
 
   const selectRange = (range: number): void => {
-    $changingVariables.selectedQuestionRange = range;
+    quizSelectionState.selectedQuestionRange = range;
   };
 
-  //setContext("changingVariables", changingVariables);
-  $effect(() => {
-    if (selectedSubject) fetchQuestionsData = getQuestionCount(selectedSubject);
-  });
+  const goBack = (): void => {
+    quizSelectionState.selectQuestionRange = false;
+  };
 </script>
 
-<main class="min-h-screen">
-  <header
-    class="pt-20
-                    flex flex-col
-                    min-w-xs w-full max-w-6xl
-                    mx-auto"
-  >
-    <a href="./" class="btn preset-filled-primary-500 w-[150px]"> Home</a>
-    <div class="mx-auto">
-      <h2 class="text-4xl">
-        Select {$changingVariables.selectQuestionRange
-          ? "No of Questions"
-          : "Subject"}
-      </h2>
-      <p class="text-xs">
-        {$changingVariables.selectQuestionRange
-          ? "Select the number of questions you want to answer"
-          : "You can only select one subject"}
-      </p>
+<div class="min-h-screen flex flex-col justify-between p-6">
+  <!-- Header -->
+  <header class="w-full max-w-5xl mx-auto flex justify-between items-center py-4">
+    <a href="/" class="flex items-center gap-1 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all font-semibold text-sm">
+      <IconChevronLeft size="16" /> Back Home
+    </a>
+    
+    <div class="p-1 rounded-full bg-surface-100/10 backdrop-blur-md border border-white/10">
+      <LightSwitch />
     </div>
   </header>
 
-  <div class="mx-auto flex flex-col items-center justify-center my-20">
-    <div
-      class="min-w-xs w-full max-w-6xl mx-2 rounded-md shadow-md shadow-primary-700 p-4"
-    >
+  <!-- Selection Container -->
+  <main class="w-full max-w-4xl mx-auto flex-1 flex flex-col items-center justify-center my-8">
+    <div class="w-full max-w-3xl text-center mb-8">
+      <h2 class="text-4xl md:text-5xl font-black tracking-tight mb-2 font-heading">
+        {#if !quizSelectionState.selectQuestionRange}
+          Select a <span class="gradient-text">Subject</span>
+        {:else}
+          Choose <span class="gradient-text">Question Count</span>
+        {/if}
+      </h2>
+      <p class="text-sm text-surface-500">
+        {#if !quizSelectionState.selectQuestionRange}
+          Select one topic from the categorized subjects list below to test your skills.
+        {:else}
+          Adjust the slider or pick a preset count to determine your challenge size.
+        {/if}
+      </p>
+    </div>
+
+    <!-- Interactive Selection Card -->
+    <div class="w-full max-w-3xl glass-card p-6 md:p-8 rounded-3xl relative overflow-hidden">
       {#await fetchSubjects}
-        <p class="text-lg text-center">Fetching subjects .....</p>
+        <div class="flex flex-col items-center justify-center py-20 space-y-4">
+          <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-500"></div>
+          <p class="text-sm font-medium text-surface-500">Fetching available categories...</p>
+        </div>
       {:then subjects}
-        {#if !$changingVariables.selectQuestionRange}
+        {#if !quizSelectionState.selectQuestionRange}
           <SelectSubject
             {subjects}
             {pickSubject}
-            {submitButtonClass}
-            {selectSubject}
-            {selectedSubject}
+            selectSubject={quizSelectionState.selectSubject}
+            selectedSubject={quizSelectionState.selectedSubject.id ? quizSelectionState.selectedSubject : null}
           />
         {:else}
-          {#await fetchQuestionsData}
-            <div class="text-xl text-surface-800 dark:text-surface-200">
-              getting questions ......
+          {#await quizSelectionState.subjectData}
+            <div class="flex flex-col items-center justify-center py-20 space-y-4">
+              <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-secondary-500"></div>
+              <p class="text-sm font-medium text-surface-500">Retrieving question counts from database...</p>
             </div>
-            {console.log(fetchQuestionsData)}
           {:then questionsData}
-            <!--{@debug changingVariables, questionsData, fetchQuestionsData} -->
             <SelectQuestionRange
-              {submitButtonClass}
-              selectedQuestionRange={$changingVariables.selectedQuestionRange}
+              bind:selectedQuestionRange={quizSelectionState.selectedQuestionRange}
               {selectRange}
-              {startQuiz}
-              {questions_limit}
+              startQuiz={quizSelectionState.startQuiz}
+              {goBack}
               {questionsData}
             />
           {/await}
         {/if}
       {:catch error}
-        <p>
-          Something went wrong {error.message}
-        </p>
+        <div class="p-6 rounded-2xl bg-error-500/10 border border-error-500/20 text-center">
+          <h4 class="text-lg font-bold text-error-400 mb-1">Failed to connect to API</h4>
+          <p class="text-sm text-surface-500 mb-4">{error.message}</p>
+          <button 
+            class="px-6 py-2.5 bg-error-500 text-white font-semibold rounded-xl hover:bg-error-600 transition" 
+            onclick={() => location.reload()}
+          >
+            Retry Connection
+          </button>
+        </div>
       {/await}
     </div>
-  </div>
-</main>
+  </main>
 
-<style>
-</style>
+  <!-- Footer spacing -->
+  <div class="py-4"></div>
+</div>

@@ -1,53 +1,43 @@
 <script lang="ts">
-  let openState: boolean = $state(false);
+  interface QuizQuestion {
+    answered?: boolean;
+    choice?: string;
+  }
 
-  let { questions, questionNum, goToQuestion, viewCorrect } = $props();
-
-  let answeredQuestions: number[] = $state([]);
-  //let ansq  = $derived(questions.map(q => ({ isAnswered: q.answered, id: q.id })));
-
-  // Ensure `answeredQuestions` updates whenever `questions` change
-  $effect(() => {
-    answeredQuestions = questions.map((q) => ({
-      isAnswered: q.answered,
-      id: q.id,
-    }));
-    //console.log($state.snapshot(("Updated answeredQuestions:", an sweredQuestions)));
-  });
-
-  let isViewNavs = $state(false);
-  const viewQuestionNavs = () => {
-    answeredQuestions = questions.map((q) => ({
-      isAnswered: q.answered,
-      id: q.id,
-    }));
-    //isViewNavs = !isViewNavs;
-    console.log(questions[questionNum].answered);
-  };
+  let { 
+    questions = [], 
+    questionNum, 
+    goToQuestion 
+  } = $props<{
+    questions: QuizQuestion[];
+    questionNum: number;
+    goToQuestion: (id: number) => void;
+  }>();
 </script>
 
-<div class="flex justify-start flex-wrap">
-  <!--    WHEN USER ANSWERS A QUESTION, THE BACKGROUND CHANGES-->
-  <!--    WHEN USER CLICKS ON A QUESTION THEY NAVIGATE TO THE QUESTION THEY CLICK ON-->
-  {#if !isViewNavs}
-    <!---  Change back to true -->
-    {#each questions as question}
+<div class="mt-8 pt-6 border-t border-white/10 space-y-3">
+  <div class="flex items-center justify-between text-xs font-bold text-surface-500 uppercase tracking-wider">
+    <span>Navigator</span>
+    <span>{questions.filter((q: QuizQuestion) => q.answered).length} of {questions.length} Answered</span>
+  </div>
+
+  <div class="flex flex-wrap gap-2.5">
+    {#each questions as question, idx}
+      {@const isCurrent = questionNum === idx}
+      {@const isAnswered = question.answered}
+      
       <button
-        class="rounded-full md:w-13 md:h-13 w-9 h-9 text-xs md:text-lg font-bold {question.answered
-          ? 'bg-primary-500'
-          : 'bg-secondary-500'} text-center m-2
-                        flex items-center justify-center"
-        onclick={() => goToQuestion(question.id)}
-        class:active={questionNum == question.id}
+        type="button"
+        class="w-10 h-10 md:w-12 md:h-12 rounded-xl text-sm md:text-base font-semibold flex items-center justify-center transition-all duration-300
+               {isCurrent
+                 ? 'bg-primary-500 text-white shadow-md shadow-primary-500/25 ring-2 ring-primary-500 dark:ring-offset-slate-900 ring-offset-2 scale-105'
+                 : isAnswered
+                   ? 'bg-secondary-500/20 border border-secondary-500/30 text-secondary-500 dark:text-secondary-400 font-bold'
+                   : 'bg-white/5 border border-white/10 text-surface-600 dark:text-surface-300 hover:bg-white/10 hover:border-white/20'}"
+        onclick={() => goToQuestion(idx)}
       >
-        {question.id + 1}
+        {idx + 1}
       </button>
     {/each}
-  {/if}
+  </div>
 </div>
-
-<style>
-  .active {
-    background-color: red;
-  }
-</style>
