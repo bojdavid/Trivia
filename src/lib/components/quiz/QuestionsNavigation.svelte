@@ -1,8 +1,5 @@
 <script lang="ts">
-  interface QuizQuestion {
-    answered?: boolean;
-    choice?: string;
-  }
+  import type { QuizQuestion } from "$lib/types/quiz";
 
   let {
     questions = [],
@@ -15,30 +12,29 @@
   }>();
 </script>
 
-<div class="mt-8 pt-6 border-t border-white/10 space-y-3">
+<div class="space-y-[var(--spacing-clamp-md)]">
   <div
-    class="flex items-center justify-between text-xs font-bold text-surface-500 uppercase tracking-wider"
+    class="flex flex-col sm:flex-row items-start sm:items-center justify-between text-[length:var(--text-clamp-sm)] font-black uppercase tracking-wider text-black dark:text-white border-4 border-black dark:border-white p-4 rounded-xl shadow-[4px_4px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_#fff] bg-white dark:bg-black"
   >
-    <span>Navigator</span>
-    <span
-      >{questions.filter((q: QuizQuestion) => q.answered).length} of {questions.length}
-      Answered</span
-    >
+    <span>Progress</span>
+    <span class="text-primary-500 mt-2 sm:mt-0">
+      {questions.filter((q: QuizQuestion) => q.answered).length} <span class="text-black dark:text-white opacity-50">/</span> {questions.length} Answered
+    </span>
   </div>
 
-  <div class="flex flex-wrap gap-2.5">
+  <div class="grid grid-cols-4 sm:grid-cols-5 gap-[var(--spacing-clamp-sm)]">
     {#each questions as question, idx}
       {@const isCurrent = questionNum === idx}
       {@const isAnswered = question.answered}
 
       <button
         type="button"
-        class="w-10 h-10 md:w-12 md:h-12 rounded-xl text-sm md:text-base font-semibold flex items-center justify-center transition-all duration-300
+        class="aspect-square rounded-xl font-black text-[length:var(--text-clamp-base)] flex items-center justify-center transition-all duration-300 border-4 hover:-translate-y-1 active:scale-95
                {isCurrent
-          ? 'bg-primary-500 text-white shadow-md shadow-primary-500/25 ring-2 ring-primary-500 dark:ring-offset-slate-900 ring-offset-2 scale-105'
+          ? 'bg-primary-500 text-white border-black dark:border-white shadow-[4px_4px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_#fff]'
           : isAnswered
-            ? 'bg-secondary-500/20 border border-secondary-500/30 text-secondary-500 dark:text-secondary-400 font-bold'
-            : 'bg-slate-100 border border-slate-200 text-surface-600 dark:text-surface-300 hover:bg-slate-200 hover:border-slate-300 dark:bg-white/5 dark:border-white/10 dark:hover:bg-white/10 dark:hover:border-white/20'}"
+            ? 'bg-black dark:bg-white border-black dark:border-white text-white dark:text-black shadow-[2px_2px_0px_#e60000]'
+            : 'bg-white dark:bg-black border-black/20 dark:border-white/20 text-black dark:text-white hover:border-black dark:hover:border-white hover:shadow-[4px_4px_0px_#1a1a1a] dark:hover:shadow-[4px_4px_0px_#fff]'}"
         onclick={() => goToQuestion(idx)}
       >
         {idx + 1}

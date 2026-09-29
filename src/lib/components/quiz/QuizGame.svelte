@@ -1,233 +1,216 @@
 <script lang="ts">
   import { onMount, onDestroy } from "svelte";
+  import { goto } from "$app/navigation";
+  import { fly, fade } from "svelte/transition";
+  import { cubicOut } from "svelte/easing";
   import QuizContainer from "./QuizContainer.svelte";
-  import QuestionsNavigation from "./QuestionsNavigation.svelte";
   import EndQuiz from "./EndQuiz.svelte";
-  import LightSwitch from "$lib/components/LightSwitch.svelte";
-  
-  // Lucide Icons
-  import IconClock from "@lucide/svelte/icons/clock";
-  import IconFlag from "@lucide/svelte/icons/flag";
-  import IconChevronLeft from "@lucide/svelte/icons/chevron-left";
-
-  interface QuizQuestion {
-    ID: number;
-    Question: string;
-    CorrectOption: string;
-    OptionA: string;
-    OptionB: string;
-    OptionC: string;
-    OptionD: string;
-    AnswerExplanation?: string;
-    Category: string;
-    answered?: boolean;
-    view_correct_ans?: boolean;
-    choice?: string;
-    id?: number;
-  }
+  import ConfirmModal from "$lib/components/ConfirmModal.svelte";
+  import type { QuizQuestion } from "$lib/types/quiz";
+  import QuizHeader from "./QuizHeader.svelte";
+  import QuizHUD from "./QuizHUD.svelte";
+  import QuizSidebar from "./QuizSidebar.svelte";
+  import QuizProgressBar from "./QuizProgressBar.svelte";
 
   let {
-    questions: questionsRaw = [],
-    timerType = 'countdown',
-    initialTime = 60,
-    quizTitle = "Trivia Quiz"
+    questions: initialQuestions = [],
+    quizTitle = "Untitled Quiz",
+    initialTime = 600,
+    timerType = "countdown",
   } = $props<{
     questions: QuizQuestion[];
-    timerType: 'countdown' | 'countup';
-    initialTime: number;
     quizTitle?: string;
+    initialTime?: number;
+    timerType?: "countdown" | "countup";
   }>();
 
-  // Wrap in $state so property mutations trigger reactivity
-  let questions = $state<QuizQuestion[]>(questionsRaw);
-
-  // Core gameplay reactive state
+  // svelte-ignore state_referenced_locally
+  let questions = $state(initialQuestions.map((q: QuizQuestion) => ({ ...q })));
   let questionNum = $state(0);
   let viewCorrect = $state(false);
   let stopQuiz = $state(false);
-  let scoreCount = $state(0);
   // svelte-ignore state_referenced_locally
   let timeLeft = $state(initialTime);
   let timerInterval: any = null;
+  let showNavigation = $state(false);
+  let showQuitModal = $state(false);
+  let showSubmitModal = $state(false);
+
+  let scoreCount = $derived(questions.filter((q: QuizQuestion) => q.choice === q.CorrectOption).length);
 
   // Initialize helper properties on questions
   $effect(() => {
-    questions.forEach((q: QuizQuestion, idx: number) => {
-      if (q.answered === undefined) q.answered = false;
-      if (q.view_correct_ans === undefined) q.view_correct_ans = false;
-      if (q.choice === undefined) q.choice = "";
-      if (q.id === undefined) q.id = idx;
-    });
+    if (questions && questions.length > 0) {
+      questions.forEach((q: QuizQuestion, index: number) => {
+        if (q.id === undefined) {
+          q.id = index;
+        }
+      });
+    }
   });
 
-  // Start timer on mount
-  onMount(() => {
+  const startTimer = () => {
+    if (timerInterval) clearInterval(timerInterval);
     timerInterval = setInterval(() => {
-      if (timerType === 'countdown') {
-        if (timeLeft > 0) {
-          timeLeft--;
-        } else {
-          endQuiz();
-        }
+      if (stopQuiz) {
+        clearInterval(timerInterval);
+        return;
+      }
+      if (timerType === "countdown") {
+        if (timeLeft > 0) timeLeft -= 1;
+        else endQuiz();
       } else {
-        timeLeft++;
+        timeLeft += 1;
       }
     }, 1000);
+  };
+
+  onMount(() => {
+    startTimer();
   });
 
-  // Clean up timer on destroy
   onDestroy(() => {
-    if (timerInterval) {
-      clearInterval(timerInterval);
-    }
+    if (timerInterval) clearInterval(timerInterval);
   });
 
-  const goToNextQuestion = (): void => {
+  const nextQuestion = () => {
     if (questionNum < questions.length - 1) {
-      questionNum++;
+      questionNum += 1;
       viewCorrect = false;
-    } else {
-      // Prompt user to finish if they've navigated to the end
-      endQuiz();
     }
   };
 
-  const goToPrevQuestion = (): void => {
+  const prevQuestion = () => {
     if (questionNum > 0) {
-      questionNum--;
+      questionNum -= 1;
       viewCorrect = false;
     }
   };
 
-  const goToQuestion = (id: number): void => {
-    questionNum = id;
-    viewCorrect = false;
-  };
-
-  const selectOption = (question: QuizQuestion, opt: string): void => {
-    question.answered = true;
-    question.choice = opt;
-  };
-
-  const viewCorrectAns = (question: QuizQuestion): void => {
-    question.view_correct_ans = true;
-    viewCorrect = true;
-  };
-
-  const endQuiz = (): void => {
-    if (timerInterval) {
-      clearInterval(timerInterval);
+  const goToQuestion = (index: number) => {
+    if (index >= 0 && index < questions.length) {
+      questionNum = index;
+      viewCorrect = false;
     }
-    stopQuiz = true;
-    scoreCount = 0;
-    questions.forEach((q: QuizQuestion) => {
-      if (q.choice === q.CorrectOption) {
-        scoreCount++;
-      }
-    });
   };
 
-  const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  const endQuiz = () => {
+    stopQuiz = true;
+    if (timerInterval) clearInterval(timerInterval);
+  };
+
+  const toggleNavigation = () => {
+    showNavigation = !showNavigation;
+  };
+
+  const handleQuit = () => {
+    if (!stopQuiz) {
+      showQuitModal = true;
+    } else {
+      goto("/");
+    }
+  };
+
+  const handleSubmit = () => {
+    showSubmitModal = true;
   };
 </script>
 
-<div class="min-h-screen flex flex-col justify-between p-6">
-  <!-- Top Navigation Header -->
-  <header class="w-full max-w-3xl mx-auto flex justify-between items-center py-4">
-    <a 
-      href="/" 
-      class="flex items-center gap-1 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all font-semibold text-sm"
-      onclick={(e) => {
-        if (!stopQuiz && !confirm("Are you sure you want to quit this quiz? Your progress will be lost.")) {
-          e.preventDefault();
-        }
-      }}
-    >
-      <IconChevronLeft size="16" /> Quit Quiz
-    </a>
-    
-    <div class="p-1 rounded-full bg-surface-100/10 backdrop-blur-md border border-white/10">
-      <LightSwitch />
-    </div>
-  </header>
+<div class="min-h-screen flex flex-col justify-between p-[var(--spacing-clamp-sm)]">
+  <QuizHeader onQuit={handleQuit} />
 
-  <!-- Gameplay area -->
-  <main class="w-full max-w-3xl mx-auto flex-1 flex flex-col items-center justify-center my-6">
-    {#if stopQuiz}
-      <div class="w-full glass-card p-6 md:p-8 rounded-3xl relative overflow-hidden">
-        <EndQuiz {scoreCount} noOfQuestion={questions.length} {questions} />
-      </div>
-    {:else}
-      <div class="w-full space-y-6">
-        <!-- Control HUD Card -->
-        <div class="w-full glass-card p-5 rounded-2xl flex items-center justify-between">
-          <div class="space-y-1">
-            <span class="text-xs font-bold text-surface-500 uppercase tracking-wider">{quizTitle}</span>
-            <div class="text-lg font-black text-surface-900 dark:text-white">
-              Question {questionNum + 1} <span class="text-surface-500 font-normal">of {questions.length}</span>
-            </div>
-          </div>
+  <main class="flex-1 flex flex-col items-center justify-center w-full max-w-4xl mx-auto my-[var(--spacing-clamp-md)] relative">
+    {#if !stopQuiz && questions.length > 0}
+      <div class="w-full space-y-[var(--spacing-clamp-md)]">
+        <QuizHUD
+          {quizTitle}
+          {questionNum}
+          totalQuestions={questions.length}
+          {timerType}
+          {timeLeft}
+          hasQuestions={questions.length > 0}
+          {toggleNavigation}
+          endQuiz={handleSubmit}
+        />
 
-          <div class="flex items-center gap-4">
-            <!-- Timer Display -->
-            <div class="flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-black transition-all
-                        {timerType === 'countdown' && timeLeft < 15 
-                          ? 'border-error-500/30 bg-error-500/10 text-error-500 animate-pulse' 
-                          : 'border-white/10 bg-white/5 text-surface-800 dark:text-white'}">
-              <IconClock size="16" class={timerType === 'countdown' && timeLeft < 15 ? 'text-error-500' : 'text-primary-500'} />
-              <span>{formatTime(timeLeft)}</span>
-            </div>
-
-            <!-- End Quiz Button -->
-            <button
-              class="px-4 py-2 rounded-xl bg-error-500/10 hover:bg-error-500/20 text-error-500 border border-error-500/20 text-sm font-bold active:scale-95 transition-all flex items-center gap-1.5"
-              onclick={endQuiz}
-            >
-              <IconFlag size="14" /> End
-            </button>
-          </div>
-        </div>
-
-        <!-- Custom Progress Bar -->
-        <div class="w-full bg-white/10 dark:bg-white/5 rounded-full h-2 overflow-hidden shadow-inner">
-          <div 
-            class="bg-primary-500 h-full rounded-full transition-all duration-300 shadow-md shadow-primary-500/50" 
-            style="width: {((questionNum + 1) / questions.length) * 100}%"
-          ></div>
-        </div>
+        <QuizProgressBar 
+          {questionNum} 
+          totalQuestions={questions.length} 
+        />
 
         <!-- Main Question Card Container -->
-        <div class="w-full glass-card p-6 md:p-8 rounded-3xl relative overflow-hidden">
-          {#if questions.length > 0}
-            <QuizContainer
-              question={questions[questionNum]}
-              {viewCorrect}
-              {goToNextQuestion}
-              {goToPrevQuestion}
-              {questionNum}
-              {viewCorrectAns}
-              onSelectOption={(opt) => selectOption(questions[questionNum], opt)}
-            />
-          {/if}
+        <div class="w-full relative mt-[var(--spacing-clamp-md)] overflow-hidden rounded-3xl min-h-[400px] grid grid-cols-1 grid-rows-1 items-start">
+          {#key questionNum}
+            <div
+              in:fly={{ x: 200, duration: 400, delay: 100, easing: cubicOut }}
+              out:fly={{ x: -200, duration: 400, easing: cubicOut }}
+              class="w-full col-start-1 row-start-1"
+            >
+              <QuizContainer
+                question={questions[questionNum]}
+                {questionNum}
+                {viewCorrect}
+                goToNextQuestion={() => {
+                  if (questionNum < questions.length - 1) {
+                    nextQuestion();
+                  } else {
+                    handleSubmit();
+                  }
+                }}
+                goToPrevQuestion={prevQuestion}
+                viewCorrectAns={() => {
+                  viewCorrect = true;
+                  questions[questionNum].view_correct_ans = true;
+                }}
+                onSelectOption={(opt) => {
+                  questions[questionNum].choice = opt;
+                }}
+              />
+            </div>
+          {/key}
         </div>
-
-        <!-- Questions Index Navigator -->
-        {#if questions.length > 0}
-          <div class="w-full glass-card p-5 rounded-2xl">
-            <QuestionsNavigation
-              {questions}
-              {questionNum}
-              {goToQuestion}
-            />
-          </div>
-        {/if}
+      </div>
+    {:else if stopQuiz}
+      <div in:fade={{ duration: 300, delay: 200 }} class="w-full">
+        <EndQuiz {questions} {scoreCount} noOfQuestion={questions.length} />
+      </div>
+    {:else}
+      <div class="theme-card p-12 text-center rounded-3xl w-full border-4">
+        <h2 class="text-[length:var(--text-clamp-xl)] font-black uppercase text-black dark:text-white">
+          No questions available
+        </h2>
+        <p class="mt-4 text-[length:var(--text-clamp-base)] text-gray-600 dark:text-gray-400 font-bold">
+          Please select a valid subject and try again.
+        </p>
       </div>
     {/if}
   </main>
-
-  <!-- Footer spacing -->
-  <div class="py-4"></div>
 </div>
+
+<QuizSidebar
+  {showNavigation}
+  {questions}
+  {questionNum}
+  {toggleNavigation}
+  {goToQuestion}
+/>
+
+<ConfirmModal 
+  isOpen={showQuitModal}
+  variant="danger"
+  onConfirm={() => goto("/")}
+  onCancel={() => showQuitModal = false}
+/>
+
+<ConfirmModal 
+  isOpen={showSubmitModal}
+  variant="positive"
+  title="Submit Quiz?"
+  message="Are you sure you want to submit your answers?"
+  confirmText="Yes, Submit"
+  onConfirm={() => {
+    showSubmitModal = false;
+    endQuiz();
+  }}
+  onCancel={() => showSubmitModal = false}
+/>

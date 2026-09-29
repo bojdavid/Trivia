@@ -46,34 +46,34 @@
   });
 </script>
 
-<div class="space-y-8">
+<div class="space-y-[var(--spacing-clamp-lg)]">
   <!-- Statistics Dashboard -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-    <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-center">
-      <div class="text-xs text-surface-500 font-semibold uppercase">Total Available</div>
-      <div class="text-2xl font-black text-surface-900 dark:text-white mt-1">{totalQuestions}</div>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-[var(--spacing-clamp-sm)]">
+    <div class="p-[var(--spacing-clamp-sm)] rounded-xl bg-white dark:bg-black border-4 border-black dark:border-white shadow-[4px_4px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_#fff] text-center">
+      <div class="text-[length:var(--text-clamp-sm)] text-primary-500 font-bold uppercase">Total Available</div>
+      <div class="text-[length:var(--text-clamp-4xl)] font-black text-black dark:text-white mt-1 leading-none">{totalQuestions}</div>
     </div>
-    <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-center">
-      <div class="text-xs text-success-500 font-semibold uppercase">Easy</div>
-      <div class="text-2xl font-black text-success-400 mt-1">{countData.total_easy_question_count}</div>
+    <div class="p-[var(--spacing-clamp-sm)] rounded-xl bg-white dark:bg-black border-4 border-black dark:border-white shadow-[4px_4px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_#fff] text-center">
+      <div class="text-[length:var(--text-clamp-sm)] text-green-500 font-bold uppercase">Easy</div>
+      <div class="text-[length:var(--text-clamp-2xl)] font-black text-green-600 dark:text-green-400 mt-2">{countData.total_easy_question_count}</div>
     </div>
-    <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-center">
-      <div class="text-xs text-warning-500 font-semibold uppercase">Medium</div>
-      <div class="text-2xl font-black text-warning-400 mt-1">{countData.total_medium_question_count}</div>
+    <div class="p-[var(--spacing-clamp-sm)] rounded-xl bg-white dark:bg-black border-4 border-black dark:border-white shadow-[4px_4px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_#fff] text-center">
+      <div class="text-[length:var(--text-clamp-sm)] text-yellow-500 font-bold uppercase">Medium</div>
+      <div class="text-[length:var(--text-clamp-2xl)] font-black text-yellow-600 dark:text-yellow-400 mt-2">{countData.total_medium_question_count}</div>
     </div>
-    <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-center">
-      <div class="text-xs text-error-500 font-semibold uppercase">Hard</div>
-      <div class="text-2xl font-black text-error-400 mt-1">{countData.total_hard_question_count}</div>
+    <div class="p-[var(--spacing-clamp-sm)] rounded-xl bg-white dark:bg-black border-4 border-black dark:border-white shadow-[4px_4px_0px_#1a1a1a] dark:shadow-[4px_4px_0px_#fff] text-center">
+      <div class="text-[length:var(--text-clamp-sm)] text-primary-500 font-bold uppercase">Hard</div>
+      <div class="text-[length:var(--text-clamp-2xl)] font-black text-primary-600 dark:text-primary-400 mt-2">{countData.total_hard_question_count}</div>
     </div>
   </div>
 
   <!-- Range Slider Section -->
-  <div class="p-6 rounded-2xl bg-white/5 border border-white/10 flex flex-col items-center">
-    <label for="question-slider" class="text-sm font-semibold text-surface-500 mb-2">
-      Select number of questions to load (Max 50 due to API limits):
+  <div class="p-[var(--spacing-clamp-md)] rounded-xl bg-white dark:bg-black border-4 border-black dark:border-white shadow-[6px_6px_0px_#e60000] flex flex-col items-center">
+    <label for="question-slider" class="text-[length:var(--text-clamp-base)] font-bold text-black dark:text-white mb-2 uppercase text-center">
+      Number of Questions (Max 50):
     </label>
     
-    <div class="text-5xl font-black text-primary-500 tracking-tight my-4">
+    <div class="text-[length:var(--text-clamp-7xl)] font-black text-primary-500 tracking-tight my-[var(--spacing-clamp-sm)] leading-none">
       {selectedQuestionRange}
     </div>
 
@@ -83,50 +83,50 @@
       min={Math.min(5, maxAvailable)}
       max={maxAvailable}
       step="1"
-      class="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary-500 my-4"
+      class="w-full h-4 bg-gray-200 dark:bg-gray-800 rounded-full appearance-none cursor-pointer accent-primary-500 my-4 outline-none focus:ring-4 focus:ring-primary-500/50"
       bind:value={selectedQuestionRange}
     />
     
-    <div class="w-full flex justify-between text-xs text-surface-500 px-1">
+    <div class="w-full flex justify-between text-[length:var(--text-clamp-sm)] font-bold text-black dark:text-white px-1">
       <span>{Math.min(5, maxAvailable)} Qs</span>
       <span>{maxAvailable} Qs</span>
     </div>
   </div>
 
   <!-- Presets Buttons Section -->
-  <div class="space-y-3">
-    <h5 class="text-sm font-bold text-surface-600 dark:text-surface-400">Quick Presets</h5>
-    <div class="flex flex-wrap gap-2">
+  <div class="space-y-4">
+    <h5 class="text-[length:var(--text-clamp-base)] font-black text-black dark:text-white uppercase tracking-wider text-center">Quick Presets</h5>
+    <div class="flex flex-wrap gap-[var(--spacing-clamp-sm)] justify-center">
       {#each presets as preset}
         <button
           type="button"
-          class="px-5 py-2.5 rounded-lg border text-sm font-semibold transition-all duration-200
+          class="px-6 py-3 rounded-xl border-4 font-black text-[length:var(--text-clamp-base)] transition-all duration-200 uppercase
                  {selectedQuestionRange === preset
-                   ? 'bg-secondary-500 border-secondary-500 text-white shadow-md'
-                   : 'bg-white/5 border-white/10 hover:bg-white/10 text-surface-700 dark:text-surface-200'}"
+                   ? 'bg-black dark:bg-white border-black dark:border-white text-white dark:text-black shadow-[4px_4px_0px_#e60000] scale-105'
+                   : 'bg-white dark:bg-black border-black/20 dark:border-white/20 hover:border-black dark:hover:border-white text-black dark:text-white hover:shadow-[4px_4px_0px_#1a1a1a] dark:hover:shadow-[4px_4px_0px_#fff] hover:-translate-y-1'}"
           onclick={() => selectRange(preset)}
         >
-          {preset} Questions
+          {preset} Qs
         </button>
       {/each}
     </div>
   </div>
 
   <!-- Footer Actions -->
-  <div class="flex flex-col sm:flex-row justify-between gap-4 pt-4 border-t border-white/10">
+  <div class="flex flex-col sm:flex-row justify-between gap-[var(--spacing-clamp-md)] pt-[var(--spacing-clamp-md)] border-t-4 border-black/10 dark:border-white/10">
     <button
       type="button"
-      class="px-6 py-4 rounded-xl border border-white/10 text-sm font-bold hover:bg-white/5 transition-all text-center"
+      class="px-6 py-4 rounded-xl border-4 border-black dark:border-white bg-white dark:bg-black text-black dark:text-white text-[length:var(--text-clamp-base)] font-black hover:-translate-y-1 hover:shadow-[4px_4px_0px_#1a1a1a] dark:hover:shadow-[4px_4px_0px_#fff] transition-all text-center uppercase"
       onclick={goBack}
     >
-      &larr; Choose Another Subject
+      &larr; Back
     </button>
     <button
       type="button"
-      class="px-8 py-4 rounded-xl bg-primary-500 hover:bg-primary-600 active:scale-95 font-bold transition-all shadow-lg shadow-primary-500/20 text-white text-center"
+      class="px-8 py-4 rounded-xl bg-primary-500 border-4 border-black dark:border-white hover:bg-primary-600 active:scale-95 font-black text-[length:var(--text-clamp-lg)] transition-all shadow-[6px_6px_0px_#1a1a1a] dark:shadow-[6px_6px_0px_#fff] text-white text-center uppercase"
       onclick={startQuiz}
     >
-      Start Trivia Quiz &rarr;
+      Start Quiz &rarr;
     </button>
   </div>
 </div>

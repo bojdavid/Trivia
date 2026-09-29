@@ -28,29 +28,29 @@
   };
 </script>
 
-<div class="min-h-screen flex flex-col justify-between p-6">
+<div class="min-h-screen flex flex-col justify-between p-[var(--spacing-clamp-sm)] pattern-bg">
   <!-- Header -->
-  <header class="w-full max-w-5xl mx-auto flex justify-between items-center py-4">
-    <a href="/" class="flex items-center gap-1 px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all font-semibold text-sm">
-      <IconChevronLeft size="16" /> Back Home
+  <header class="w-full max-w-5xl mx-auto flex justify-between items-center py-[var(--spacing-clamp-sm)]">
+    <a href="/" class="flex items-center gap-[var(--spacing-clamp-sm)] px-4 py-2 rounded-xl bg-white dark:bg-black border-2 border-black dark:border-white shadow-[2px_2px_0px_#000] dark:shadow-[2px_2px_0px_#fff] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[4px_4px_0px_#e60000] transition-all font-bold text-[length:var(--text-clamp-base)] text-black dark:text-white">
+      <IconChevronLeft size="20" /> Back Home
     </a>
     
-    <div class="p-1 rounded-full bg-surface-100/10 backdrop-blur-md border border-white/10">
+    <div class="p-2 rounded-full bg-white/80 dark:bg-black/80 backdrop-blur-md border-2 border-black dark:border-white shadow-[2px_2px_0px_#000] dark:shadow-[2px_2px_0px_#fff]">
       <LightSwitch />
     </div>
   </header>
 
   <!-- Selection Container -->
-  <main class="w-full max-w-4xl mx-auto flex-1 flex flex-col items-center justify-center my-8">
-    <div class="w-full max-w-3xl text-center mb-8">
-      <h2 class="text-4xl md:text-5xl font-black tracking-tight mb-2 font-heading">
+  <main class="w-full max-w-4xl mx-auto flex-1 flex flex-col items-center justify-center my-[var(--spacing-clamp-lg)]">
+    <div class="w-full max-w-3xl text-center mb-[var(--spacing-clamp-lg)] animate-slide-up">
+      <h2 class="text-[length:var(--text-clamp-4xl)] font-black tracking-tight mb-[var(--spacing-clamp-sm)] font-heading uppercase text-black dark:text-white">
         {#if !quizSelectionState.selectQuestionRange}
-          Select a <span class="gradient-text">Subject</span>
+          Select a <span class="gradient-text-theme">Subject</span>
         {:else}
-          Choose <span class="gradient-text">Question Count</span>
+          Choose <span class="gradient-text-theme">Question Count</span>
         {/if}
       </h2>
-      <p class="text-sm text-surface-500">
+      <p class="text-[length:var(--text-clamp-lg)] text-secondary-600 dark:text-gray-300 font-medium">
         {#if !quizSelectionState.selectQuestionRange}
           Select one topic from the categorized subjects list below to test your skills.
         {:else}
@@ -60,11 +60,11 @@
     </div>
 
     <!-- Interactive Selection Card -->
-    <div class="w-full max-w-3xl glass-card p-6 md:p-8 rounded-3xl relative overflow-hidden">
+    <div class="w-full max-w-4xl theme-card p-[var(--spacing-clamp-md)] rounded-2xl relative overflow-hidden animate-slide-up delay-100">
       {#await fetchSubjects}
-        <div class="flex flex-col items-center justify-center py-20 space-y-4">
-          <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-500"></div>
-          <p class="text-sm font-medium text-surface-500">Fetching available categories...</p>
+        <div class="flex flex-col items-center justify-center py-[var(--spacing-clamp-lg)] space-y-[var(--spacing-clamp-sm)]">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-primary-500"></div>
+          <p class="text-[length:var(--text-clamp-base)] font-bold text-secondary-600 dark:text-white">Fetching available categories...</p>
         </div>
       {:then subjects}
         {#if !quizSelectionState.selectQuestionRange}
@@ -76,9 +76,9 @@
           />
         {:else}
           {#await quizSelectionState.subjectData}
-            <div class="flex flex-col items-center justify-center py-20 space-y-4">
-              <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-secondary-500"></div>
-              <p class="text-sm font-medium text-surface-500">Retrieving question counts from database...</p>
+            <div class="flex flex-col items-center justify-center py-[var(--spacing-clamp-lg)] space-y-[var(--spacing-clamp-sm)]">
+              <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-secondary-500 dark:border-white"></div>
+              <p class="text-[length:var(--text-clamp-base)] font-bold text-secondary-600 dark:text-white">Retrieving question counts...</p>
             </div>
           {:then questionsData}
             <SelectQuestionRange
@@ -91,11 +91,11 @@
           {/await}
         {/if}
       {:catch error}
-        <div class="p-6 rounded-2xl bg-error-500/10 border border-error-500/20 text-center">
-          <h4 class="text-lg font-bold text-error-400 mb-1">Failed to connect to API</h4>
-          <p class="text-sm text-surface-500 mb-4">{error.message}</p>
+        <div class="p-[var(--spacing-clamp-md)] rounded-xl bg-primary-500/10 border-4 border-primary-500 text-center shadow-[4px_4px_0px_#e60000]">
+          <h4 class="text-[length:var(--text-clamp-2xl)] font-bold text-primary-500 mb-2">Failed to connect to API</h4>
+          <p class="text-[length:var(--text-clamp-base)] text-black dark:text-white mb-[var(--spacing-clamp-md)] font-medium">{error.message}</p>
           <button 
-            class="px-6 py-2.5 bg-error-500 text-white font-semibold rounded-xl hover:bg-error-600 transition" 
+            class="px-8 py-3 bg-primary-500 text-white font-bold text-[length:var(--text-clamp-base)] rounded-xl hover:bg-primary-600 border-2 border-black dark:border-white shadow-[4px_4px_0px_#000] dark:shadow-[4px_4px_0px_#fff] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_#000] dark:hover:shadow-[6px_6px_0px_#fff] transition-all" 
             onclick={() => location.reload()}
           >
             Retry Connection
@@ -106,5 +106,5 @@
   </main>
 
   <!-- Footer spacing -->
-  <div class="py-4"></div>
+  <div class="py-[var(--spacing-clamp-md)]"></div>
 </div>
