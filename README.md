@@ -1,39 +1,66 @@
-# sv
-Trivia quiz app trial
+# Trivia Quiz App
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A modern, interactive, and fully responsive Trivia Quiz Application built with **Svelte 5** and **SvelteKit**. This application provides an engaging user experience with dynamic animations, custom themes, and robust quiz-taking mechanics.
 
-## Creating a project
+🚀 **Live Demo:** [https://trivia-navy-nine.vercel.app/](https://trivia-navy-nine.vercel.app/)
 
-If you're seeing this, you've probably already done this step. Congrats!
+## ✨ Features
 
-```bash
-# create a new project in the current directory
-npx sv create
+- **Interactive Quiz Gameplay:** Seamlessly navigate through questions with slide animations.
+- **Timer Modes:** Supports both countdown and countup timers.
+- **Smart Navigation:** Skip questions, jump to specific questions via the sidebar, or go back to previous questions.
+- **Instant Feedback:** Option to reveal correct answers and view detailed explanations during the quiz.
+- **Dynamic Modals:** Custom-built confirmation modals with `positive`, `danger`, and `neutral` variants for submitting or quitting the quiz.
+- **Responsive Design:** Optimized for both mobile and desktop screens with a stunning dual-tone (Dark/Light mode) aesthetic.
+- **State Management:** Fully utilizes Svelte 5 Runes (`$state`, `$derived`, `$effect`) for highly performant state reactivity.
 
-# create a new project in my-app
-npx sv create my-app
-```
+## 🛠️ Built With
 
-## Developing
+- [Svelte 5](https://svelte.dev/) - UI Framework
+- [SvelteKit](https://kit.svelte.dev/) - Application Framework
+- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
+- [Skeleton](https://skeleton.dev/) - UI Toolkit
+- [Lucide Svelte](https://lucide.dev/) - Icons
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## 💻 Running Locally
 
-```bash
-npm run dev
+To get a local copy up and running, follow these simple steps.
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+### Prerequisites
 
-## Building
+Ensure you have Node.js and npm installed on your machine.
 
-To create a production version of your app:
+### Installation
+
+1. Clone the repository
+   ```bash
+   git clone https://github.com/bojdavid/Trivia.git
+   ```
+2. Navigate into the directory
+   ```bash
+   cd Trivia
+   ```
+3. Install dependencies
+   ```bash
+   npm install
+   # or pnpm install / yarn
+   ```
+4. Start the development server
+   ```bash
+   npm run dev
+   ```
+5. Open your browser and visit `http://localhost:5173`
+
+## 📦 Building for Production
+
+To create an optimized production build of the app:
 
 ```bash
 npm run build
 ```
 
-You can preview the production build with `npm run preview`.
+You can preview the production build locally with:
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+```bash
+npm run preview
+```
